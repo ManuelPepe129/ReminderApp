@@ -19,6 +19,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 20
+    restart: unless-stopped
 
   mailpit:
     # Catches all outgoing e-mail in development: http://localhost:8025
@@ -26,6 +27,7 @@ services:
     ports:
       - '${MAILPIT_UI_PORT:-8025}:8025'
       - '${MAILPIT_SMTP_PORT:-1025}:1025'
+    restart: unless-stopped
 
   api:
     build:

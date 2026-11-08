@@ -1,11 +1,12 @@
 import { buildApp } from './app';
 import { loadConfig } from './config';
-import { createPostgres, runMigrations } from './db';
+import { createPostgres, runMigrations, waitForDatabase } from './db';
 import { createSmtpMailer } from './lib/mailer';
 import { PgRealtime } from './lib/realtime';
 import { createWebPushSender } from './notifications/push';
 
 const config = loadConfig();
+await waitForDatabase(config.databaseUrl);
 if (process.env.MIGRATE_ON_START !== 'false') await runMigrations(config.databaseUrl);
 
 const { db, client } = createPostgres(config.databaseUrl);

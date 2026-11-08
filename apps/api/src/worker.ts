@@ -1,5 +1,5 @@
 import { loadConfig } from './config';
-import { createPostgres } from './db';
+import { createPostgres, waitForDatabase } from './db';
 import { createSmtpMailer } from './lib/mailer';
 import { cleanup, runNotificationTick } from './notifications/scheduler';
 import { createWebPushSender } from './notifications/push';
@@ -10,6 +10,7 @@ import { createWebPushSender } from './notifications/push';
  * may run at once: de-duplication is enforced by the database.
  */
 const config = loadConfig();
+await waitForDatabase(config.databaseUrl);
 const { db, client } = createPostgres(config.databaseUrl, 3);
 const deps = {
   db,

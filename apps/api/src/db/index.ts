@@ -25,6 +25,31 @@ export function createPostgres(url: string, max = 10) {
   return { db, client };
 }
 
+/**
+ * Waits until the database accepts connections. After a Docker daemon restart
+ * containers come back in arbitrary order (depends_on only applies to
+ * `compose up`), so the API/worker must tolerate a database that is still starting.
+ */
+export async function waitForDatabase(
+  url: string,
+  { timeoutMs = 60_000, intervalMs = 2_000, log = console.warn } = {},
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  for (let attempt = 1; ; attempt++) {
+    const client = postgres(url, { max: 1, connect_timeout: 5, onnotice: () => undefined });
+    try {
+      await client`select 1`;
+      return;
+    } catch (err) {
+      if (Date.now() + intervalMs > deadline) throw err;
+      log(`Database not reachable yet (attempt ${attempt}): ${(err as Error).message}`);
+      await new Promise((r) => setTimeout(r, intervalMs));
+    } finally {
+      await client.end({ timeout: 1 }).catch(() => undefined);
+    }
+  }
+}
+
 export async function runMigrations(url: string, migrationsFolder = MIGRATIONS_DIR): Promise<void> {
   const client = postgres(url, { max: 1, onnotice: () => undefined });
   try {
