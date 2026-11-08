@@ -1,0 +1,41 @@
+{
+  "name": "reminder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "e2e"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "dev": "npm run dev -w @reminder/api & npm run dev -w @reminder/web",
+    "dev:api": "npm run dev -w @reminder/api",
+    "dev:web": "npm run dev -w @reminder/web",
+    "dev:worker": "npm run dev:worker -w @reminder/api",
+    "build": "npm run build -w @reminder/api && npm run build -w @reminder/web",
+    "test": "npm run test -w @reminder/shared && npm run test -w @reminder/api && npm run test -w @reminder/web",
+    "test:e2e": "npm run test -w @reminder/e2e",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "npm run db:generate -w @reminder/api",
+    "db:migrate": "npm run db:migrate -w @reminder/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^3.2.7"
+  }
+}
