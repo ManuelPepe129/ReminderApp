@@ -1,14 +1,82 @@
+# ---------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------
 node_modules/
+.pnp.*
+.yarn/
+
+# ---------------------------------------------------------------
+# Build output & caches
+# ---------------------------------------------------------------
 dist/
+dev-dist/
+build/
+.vite/
+.cache/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
 coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+e2e/.auth/
+
+# ---------------------------------------------------------------
+# Secrets & local configuration (NEVER commit real credentials)
+# Only the template .env.example is versioned.
+# ---------------------------------------------------------------
 .env
 .env.*
 !.env.example
+*.local
+*.pem
+*.key
+*.crt
+*.p12
+docker-compose.override.yml
+
+# ---------------------------------------------------------------
+# Database dumps & local data
+# (migrations in apps/api/drizzle/*.sql ARE versioned)
+# ---------------------------------------------------------------
+backups/
+*.dump
+*.sql.gz
+/backup*.sql
+pgdata/
+
+# ---------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------
+logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------------------------------
+# Editors & OS
+# ---------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
-playwright-report/
-test-results/
-e2e/.auth/
-dev-dist/
-.vite/
-*.tsbuildinfo
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------
+# Local AI assistant settings
+# ---------------------------------------------------------------
+.claude/settings.local.json
