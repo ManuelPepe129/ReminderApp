@@ -113,6 +113,12 @@ export const completeSchema = z.object({
   /** Defaults to now. Cannot be in the future (5 minutes of clock skew tolerated). */
   completedAt: isoDate.optional(),
   note: z.string().trim().max(500).optional(),
+  /**
+   * The effective due date the client saw. If the action has meanwhile been
+   * completed/snoozed by someone else, the server answers 409 instead of
+   * completing the next occurrence by mistake.
+   */
+  expectedDueAt: isoDate.optional(),
 });
 export type CompleteInput = z.infer<typeof completeSchema>;
 

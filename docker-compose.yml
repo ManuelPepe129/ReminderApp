@@ -1,0 +1,75 @@
+# Local stack.
+#   Infrastructure only (for `npm run dev`):  docker compose up -d db mailpit
+#   Full stack (production-like):            docker compose up -d --build
+name: reminder
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: reminder
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reminder}
+      POSTGRES_DB: reminder
+    ports:
+      - '${POSTGRES_PORT:-5433}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U reminder -d reminder']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    # Catches all outgoing e-mail in development: http://localhost:8025
+    image: axllent/mailpit:v1.27
+    ports:
+      - '${MAILPIT_UI_PORT:-8025}:8025'
+      - '${MAILPIT_SMTP_PORT:-1025}:1025'
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment: &api-env
+      NODE_ENV: production
+      DATABASE_URL: postgres://reminder:${POSTGRES_PASSWORD:-reminder}@db:5432/reminder
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8080}
+      TRUST_PROXY: 'true'
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SMTP_URL: ${SMTP_URL:-smtp://mailpit:1025}
+      MAIL_FROM: ${MAIL_FROM:-Promemoria <noreply@localhost>}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@localhost}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ['node', 'dist/worker.js']
+    environment:
+      <<: *api-env
+      MIGRATE_ON_START: 'false'
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '${WEB_PORT:-8080}:80'
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  pgdata:
