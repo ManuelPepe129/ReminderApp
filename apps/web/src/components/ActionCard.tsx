@@ -53,9 +53,13 @@ export function ActionCard({
             </span>
           )}
           {action.snoozedUntil && active && (
-            <span className="badge badge-snoozed">{t('action.snoozedUntil', { when: formatWhen(action.snoozedUntil, tz, now) })}</span>
+            <span className="badge badge-snoozed">
+              {t('action.snoozedUntil', { when: formatWhen(action.snoozedUntil, tz, now) })}
+            </span>
           )}
-          {action.status === 'paused' && <span className="badge badge-paused">{t('action.paused')}</span>}
+          {action.status === 'paused' && (
+            <span className="badge badge-paused">{t('action.paused')}</span>
+          )}
           <span className="row" style={{ gap: 4 }}>
             <RepeatIcon width={14} height={14} />
             {intervalLabel(t, action)}
@@ -86,7 +90,10 @@ export function ActionCard({
             <CheckIcon />
             {t('action.done')}
           </button>
-          <SnoozeMenu title={action.title} onSnooze={(until) => quick.snooze(action.id, action.title, until)} />
+          <SnoozeMenu
+            title={action.title}
+            onSnooze={(until) => quick.snooze(action.id, action.title, until)}
+          />
         </div>
       )}
     </li>

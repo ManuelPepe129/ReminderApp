@@ -34,15 +34,17 @@ services:
     environment: &api-env
       NODE_ENV: production
       DATABASE_URL: postgres://reminder:${POSTGRES_PASSWORD:-reminder}@db:5432/reminder
-      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8080}
+      APP_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8080}
       TRUST_PROXY: 'true'
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
-      SMTP_URL: ${SMTP_URL:-smtp://mailpit:1025}
+      SMTP_URL: ${DOCKER_SMTP_URL:-smtp://mailpit:1025}
       MAIL_FROM: ${MAIL_FROM:-Promemoria <noreply@localhost>}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@localhost}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      AUTH_RATE_LIMIT_PER_15MIN: ${AUTH_RATE_LIMIT_PER_15MIN:-20}
+      INVITE_RATE_LIMIT_PER_HOUR: ${INVITE_RATE_LIMIT_PER_HOUR:-20}
     depends_on:
       db:
         condition: service_healthy
@@ -53,6 +55,8 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     command: ['node', 'dist/worker.js']
+    healthcheck:
+      disable: true
     environment:
       <<: *api-env
       MIGRATE_ON_START: 'false'

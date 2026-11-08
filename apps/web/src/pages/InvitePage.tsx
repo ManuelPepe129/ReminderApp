@@ -20,7 +20,10 @@ export function InvitePage() {
   const accept = async () => {
     setBusy(true);
     try {
-      const { listId } = await api<{ listId: string }>(`/invitations/${encodeURIComponent(token)}/accept`, { method: 'POST' });
+      const { listId } = await api<{ listId: string }>(
+        `/invitations/${encodeURIComponent(token)}/accept`,
+        { method: 'POST' },
+      );
       await qc.invalidateQueries({ queryKey: keys.lists });
       invalidateActions(qc);
       toast.show(t('invite.joined', { list: preview.data?.listName ?? '' }));
@@ -39,7 +42,9 @@ export function InvitePage() {
           {t('common.appName')}
         </div>
         <h1>{t('invite.title')}</h1>
-        {preview.isPending && <div className="spinner" role="progressbar" aria-label={t('common.loading')} />}
+        {preview.isPending && (
+          <div className="spinner" role="progressbar" aria-label={t('common.loading')} />
+        )}
         {preview.isError && (
           <div className="alert error" role="alert">
             {t('invite.invalid')}
@@ -53,7 +58,12 @@ export function InvitePage() {
                 : t('invite.joinNoInviter', { list: preview.data.listName })}
             </p>
             {me.data ? (
-              <button type="button" className="btn btn-primary btn-block" onClick={() => void accept()} disabled={busy}>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                onClick={() => void accept()}
+                disabled={busy}
+              >
                 {t('invite.accept')}
               </button>
             ) : (

@@ -97,7 +97,13 @@ export async function invitationRoutes(app: FastifyInstance, deps: AppDeps): Pro
           .where(eq(users.email, input.email));
         try {
           await deps.mailer.send(
-            invitationEmail(input.email, url, user.displayName, list.name, recipient?.locale ?? user.locale),
+            invitationEmail(
+              input.email,
+              url,
+              user.displayName,
+              list.name,
+              recipient?.locale ?? user.locale,
+            ),
           );
         } catch (err) {
           req.log.error({ err }, 'invitation e-mail failed');

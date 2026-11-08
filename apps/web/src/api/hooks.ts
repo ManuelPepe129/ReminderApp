@@ -1,9 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type QueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import {
   computeNextDue,
   effectiveDue,
@@ -198,7 +193,11 @@ export function useActionMutations() {
   function patchCached(id: string, patch: (a: ActionDto) => ActionDto) {
     const snapshots = qc.getQueriesData<ActionDto[]>({ queryKey: ['actions'] });
     for (const [key, data] of snapshots) {
-      if (data) qc.setQueryData(key, data.map((a) => (a.id === id ? patch(a) : a)));
+      if (data)
+        qc.setQueryData(
+          key,
+          data.map((a) => (a.id === id ? patch(a) : a)),
+        );
     }
     return snapshots;
   }
@@ -262,7 +261,10 @@ export function useActionMutations() {
         return patchCached(id, (a) => ({
           ...a,
           snoozedUntil: until,
-          effectiveDueAt: effectiveDue({ dueAt: new Date(a.dueAt), snoozedUntil: new Date(until) }).toISOString(),
+          effectiveDueAt: effectiveDue({
+            dueAt: new Date(a.dueAt),
+            snoozedUntil: new Date(until),
+          }).toISOString(),
         }));
       },
       onError: (_e, _v, snapshots) => snapshots && restore(snapshots),

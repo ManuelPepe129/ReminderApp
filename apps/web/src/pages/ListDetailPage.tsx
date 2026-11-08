@@ -36,11 +36,13 @@ export function ListDetailPage() {
   }, [list.data]);
 
   const onError = (err: unknown) => {
-    if (err instanceof ApiError && err.code === 'last_owner') toast.show(t('lists.last_owner'), 'error');
+    if (err instanceof ApiError && err.code === 'last_owner')
+      toast.show(t('lists.last_owner'), 'error');
     else toast.error(err);
   };
 
-  if (list.isPending) return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
+  if (list.isPending)
+    return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
   if (!list.data)
     return (
       <div className="card empty">
@@ -61,7 +63,11 @@ export function ListDetailPage() {
         </Link>
       </div>
       <div className="row">
-        <span className="list-swatch" style={{ background: l.color, width: 20, height: 20 }} aria-hidden />
+        <span
+          className="list-swatch"
+          style={{ background: l.color, width: 20, height: 20 }}
+          aria-hidden
+        />
         <h1 style={{ margin: 0 }}>{l.name}</h1>
         <span className="badge">{t(`lists.roles.${l.role}`)}</span>
         <span className="spacer" />
@@ -75,13 +81,22 @@ export function ListDetailPage() {
           className="card stack"
           onSubmit={(e) => {
             e.preventDefault();
-            m.update.mutate({ id: l.id, name: name.trim(), color }, { onSuccess: () => toast.show(t('settings.saved')), onError });
+            m.update.mutate(
+              { id: l.id, name: name.trim(), color },
+              { onSuccess: () => toast.show(t('settings.saved')), onError },
+            );
           }}
         >
           <h2>{t('lists.rename')}</h2>
           <div className="field">
             <label htmlFor={`${fid}-name`}>{t('lists.name')}</label>
-            <input id={`${fid}-name`} value={name} maxLength={60} required onChange={(e) => setName(e.target.value)} />
+            <input
+              id={`${fid}-name`}
+              value={name}
+              maxLength={60}
+              required
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <ColorPicker value={color} onChange={setColor} />
           <div>
@@ -116,7 +131,11 @@ export function ListDetailPage() {
                     className="btn"
                     onClick={() =>
                       m.setRole.mutate(
-                        { listId: l.id, userId: mb.userId, role: mb.role === 'owner' ? 'editor' : 'owner' },
+                        {
+                          listId: l.id,
+                          userId: mb.userId,
+                          role: mb.role === 'owner' ? 'editor' : 'owner',
+                        },
                         { onError },
                       )
                     }
@@ -187,12 +206,19 @@ export function ListDetailPage() {
             <span className="label">{t('lists.inviteLink')}</span>
             {link ? (
               <div className="copy-field">
-                <input readOnly value={link} aria-label={t('lists.inviteLink')} onFocus={(e) => e.target.select()} />
+                <input
+                  readOnly
+                  value={link}
+                  aria-label={t('lists.inviteLink')}
+                  onFocus={(e) => e.target.select()}
+                />
                 <button
                   type="button"
                   className="btn"
                   onClick={() => {
-                    void navigator.clipboard?.writeText(link).then(() => toast.show(t('common.copied')));
+                    void navigator.clipboard
+                      ?.writeText(link)
+                      .then(() => toast.show(t('common.copied')));
                   }}
                 >
                   {t('common.copy')}
@@ -203,7 +229,9 @@ export function ListDetailPage() {
                 <button
                   type="button"
                   className="btn"
-                  onClick={() => m.invite.mutate({ listId: l.id }, { onSuccess: (r) => setLink(r.url), onError })}
+                  onClick={() =>
+                    m.invite.mutate({ listId: l.id }, { onSuccess: (r) => setLink(r.url), onError })
+                  }
                 >
                   {t('lists.createLink')}
                 </button>
@@ -219,7 +247,9 @@ export function ListDetailPage() {
                 <div key={inv.id} className="member-row">
                   <span className="spacer">
                     {inv.email ?? t('lists.linkInvite')}{' '}
-                    <span className="small muted">· {t('lists.expires', { when: formatWhen(inv.expiresAt, tz) })}</span>
+                    <span className="small muted">
+                      · {t('lists.expires', { when: formatWhen(inv.expiresAt, tz) })}
+                    </span>
                   </span>
                   <button
                     type="button"
@@ -255,7 +285,10 @@ export function ListDetailPage() {
             className="btn btn-danger"
             onClick={() => {
               if (!window.confirm(t('lists.deleteConfirm', { name: l.name }))) return;
-              m.remove.mutate(l.id, { onSuccess: () => navigate('/liste', { replace: true }), onError });
+              m.remove.mutate(l.id, {
+                onSuccess: () => navigate('/liste', { replace: true }),
+                onError,
+              });
             }}
           >
             {t('lists.delete')}

@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useId, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useId,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   INTERVAL_UNITS,
@@ -31,7 +39,10 @@ export function ActionEditorProvider({ children }: { children: ReactNode }) {
     opts: {},
     key: 0,
   });
-  const open = useCallback((opts: OpenOptions = {}) => setState((s) => ({ open: true, opts, key: s.key + 1 })), []);
+  const open = useCallback(
+    (opts: OpenOptions = {}) => setState((s) => ({ open: true, opts, key: s.key + 1 })),
+    [],
+  );
   const close = useCallback(() => setState((s) => ({ ...s, open: false })), []);
   return (
     <Ctx.Provider value={open}>
@@ -86,7 +97,8 @@ function ActionFormDialog({
     const errs: Record<string, string> = {};
     if (!title.trim()) errs.title = t('form.required');
     const n = Number(intervalValue);
-    if (!Number.isInteger(n) || n < 1 || n > MAX_INTERVAL_VALUE) errs.interval = t('errors.validation_error');
+    if (!Number.isInteger(n) || n < 1 || n > MAX_INTERVAL_VALUE)
+      errs.interval = t('errors.validation_error');
     const dueIso = fromLocalInput(due, tz);
     if (!dueIso) errs.due = t('form.required');
     if (!effectiveListId) errs.list = t('form.required');
@@ -106,7 +118,8 @@ function ActionFormDialog({
       leadMinutes: lead === '' ? null : Number(lead),
     };
     const onError = (err: unknown) => {
-      if (err instanceof ApiError && err.code === 'validation_error') setErrors({ form: t('errors.validation_error') });
+      if (err instanceof ApiError && err.code === 'validation_error')
+        setErrors({ form: t('errors.validation_error') });
       else toast.error(err);
     };
     const onSuccess = () => {
@@ -169,7 +182,14 @@ function ActionFormDialog({
         {(lists.data?.length ?? 0) > 1 && (
           <div className="field">
             <label htmlFor={f('list')}>{t('form.list')}</label>
-            <select id={f('list')} value={effectiveListId} onChange={(e) => { setListId(e.target.value); setAssigneeId(''); }}>
+            <select
+              id={f('list')}
+              value={effectiveListId}
+              onChange={(e) => {
+                setListId(e.target.value);
+                setAssigneeId('');
+              }}
+            >
               {lists.data?.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}
@@ -191,7 +211,8 @@ function ActionFormDialog({
             aria-describedby={f('due-hint')}
           />
           <span className="hint" id={f('due-hint')}>
-            {t('form.timezoneHint', { tz: action?.timezone ?? tz })} {editing && t('form.nextDueHint')}
+            {t('form.timezoneHint', { tz: action?.timezone ?? tz })}{' '}
+            {editing && t('form.nextDueHint')}
           </span>
         </div>
 
@@ -228,7 +249,13 @@ function ActionFormDialog({
           <div className="stack" style={{ gap: 8 }}>
             {RECURRENCE_MODES.map((md) => (
               <label key={md} className="choice">
-                <input type="radio" name={f('mode')} value={md} checked={mode === md} onChange={() => setMode(md)} />
+                <input
+                  type="radio"
+                  name={f('mode')}
+                  value={md}
+                  checked={mode === md}
+                  onChange={() => setMode(md)}
+                />
                 <span>
                   <strong>{t(`mode.${md}`)}</strong>
                   <br />
@@ -253,12 +280,18 @@ function ActionFormDialog({
               onChange={(e) => setCategory(e.target.value)}
             />
             <datalist id={f('categories')}>
-              {categories.data?.map((c) => <option key={c} value={c} />)}
+              {categories.data?.map((c) => (
+                <option key={c} value={c} />
+              ))}
             </datalist>
           </div>
           <div className="field">
             <label htmlFor={f('assignee')}>{t('form.assignee')}</label>
-            <select id={f('assignee')} value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+            <select
+              id={f('assignee')}
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+            >
               <option value="">{t('form.nobody')}</option>
               {members.data?.map((mb) => (
                 <option key={mb.userId} value={mb.userId}>
@@ -286,7 +319,12 @@ function ActionFormDialog({
           <label htmlFor={f('notes')}>
             {t('form.notes')} <span className="muted small">({t('common.optional')})</span>
           </label>
-          <textarea id={f('notes')} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <textarea
+            id={f('notes')}
+            maxLength={2000}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
         </div>
       </form>
     </Dialog>

@@ -40,7 +40,8 @@ const it = {
     haveAccount: 'Hai già un account?',
     or: 'oppure',
     magicLink: 'Inviami un link di accesso',
-    magicLinkSent: 'Se l’indirizzo è valido riceverai a breve un’email con il link di accesso (valido 15 minuti).',
+    magicLinkSent:
+      'Se l’indirizzo è valido riceverai a breve un’email con il link di accesso (valido 15 minuti).',
     verifying: 'Verifica del link in corso…',
     invalidLink: 'Il link non è valido o è scaduto. Richiedine uno nuovo.',
     invalid_credentials: 'Email o password non corretti.',
@@ -53,7 +54,8 @@ const it = {
     overdueHint: 'Da confermare il prima possibile',
     allClear: 'Nessuna azione scaduta. Ottimo lavoro!',
     upcoming: 'In arrivo',
-    noActions: 'Non hai ancora azioni. Crea la prima: ad esempio “Innaffiare le piante” ogni settimana.',
+    noActions:
+      'Non hai ancora azioni. Crea la prima: ad esempio “Innaffiare le piante” ogni settimana.',
     noUpcoming: 'Niente in programma.',
     paused: 'In pausa',
     buckets: {
@@ -107,7 +109,8 @@ const it = {
     from_completion: 'Dall’ultima esecuzione',
     from_completion_hint: 'La prossima scadenza parte da quando l’hai fatta (es. cambio pile).',
     fixed_schedule: 'A calendario fisso',
-    fixed_schedule_hint: 'Segue una griglia regolare, indipendente da quando l’hai fatta (es. pulizie ogni lunedì).',
+    fixed_schedule_hint:
+      'Segue una griglia regolare, indipendente da quando l’hai fatta (es. pulizie ogni lunedì).',
   },
   action: {
     done: 'Fatto',
@@ -272,7 +275,8 @@ const it = {
     pushEnable: 'Attiva su questo dispositivo',
     pushDisable: 'Disattiva su questo dispositivo',
     pushActive: 'Attive su questo dispositivo.',
-    pushUnsupported: 'Questo browser non supporta le notifiche push. Su iPhone installa prima l’app nella schermata Home.',
+    pushUnsupported:
+      'Questo browser non supporta le notifiche push. Su iPhone installa prima l’app nella schermata Home.',
     pushNotConfigured: 'Le notifiche push non sono configurate sul server.',
     pushDenied: 'Le notifiche sono bloccate nelle impostazioni del browser.',
     pushTest: 'Invia notifica di prova',

@@ -42,19 +42,29 @@ describe('schemas', () => {
   });
 
   it('only accepts relative redirects', () => {
-    expect(magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: '/inviti/x' }).success).toBe(true);
-    expect(magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: '//evil.com' }).success).toBe(false);
-    expect(magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: 'https://evil.com' }).success).toBe(false);
+    expect(
+      magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: '/inviti/x' }).success,
+    ).toBe(true);
+    expect(
+      magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: '//evil.com' }).success,
+    ).toBe(false);
+    expect(
+      magicLinkRequestSchema.safeParse({ email: 'a@b.it', redirect: 'https://evil.com' }).success,
+    ).toBe(false);
   });
 
   it('validates quiet hours and calendar ranges', () => {
-    expect(preferencesSchema.safeParse({ quietStart: '22:00', quietEnd: '07:30' }).success).toBe(true);
+    expect(preferencesSchema.safeParse({ quietStart: '22:00', quietEnd: '07:30' }).success).toBe(
+      true,
+    );
     expect(preferencesSchema.safeParse({ quietStart: '24:00' }).success).toBe(false);
     expect(
-      calendarQuerySchema.safeParse({ from: '2025-01-01T00:00:00Z', to: '2025-06-01T00:00:00Z' }).success,
+      calendarQuerySchema.safeParse({ from: '2025-01-01T00:00:00Z', to: '2025-06-01T00:00:00Z' })
+        .success,
     ).toBe(false);
     expect(
-      calendarQuerySchema.safeParse({ from: '2025-01-01T00:00:00Z', to: '2025-02-01T00:00:00Z' }).success,
+      calendarQuerySchema.safeParse({ from: '2025-01-01T00:00:00Z', to: '2025-02-01T00:00:00Z' })
+        .success,
     ).toBe(true);
   });
 });

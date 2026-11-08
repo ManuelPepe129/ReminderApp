@@ -57,7 +57,12 @@ export function Dialog({
         <div className="dialog-body">
           <div className="dialog-header">
             <h2 id={titleId}>{title}</h2>
-            <button type="button" className="btn btn-ghost btn-icon" onClick={onClose} aria-label={t('common.close')}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-icon"
+              onClick={onClose}
+              aria-label={t('common.close')}
+            >
               <CloseIcon />
             </button>
           </div>

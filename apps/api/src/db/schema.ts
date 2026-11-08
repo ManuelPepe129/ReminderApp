@@ -68,7 +68,10 @@ export const authTokens = pgTable(
     usedAt: tstz('used_at'),
     createdAt: createdAt(),
   },
-  (t) => [uniqueIndex('auth_tokens_hash_uq').on(t.tokenHash), index('auth_tokens_email_idx').on(t.email)],
+  (t) => [
+    uniqueIndex('auth_tokens_hash_uq').on(t.tokenHash),
+    index('auth_tokens_email_idx').on(t.email),
+  ],
 );
 
 export const lists = pgTable('lists', {
@@ -134,7 +137,9 @@ export const actions = pgTable(
     notes: text('notes'),
     category: text('category'),
     intervalValue: integer('interval_value').notNull(),
-    intervalUnit: text('interval_unit', { enum: ['hour', 'day', 'week', 'month', 'year'] }).notNull(),
+    intervalUnit: text('interval_unit', {
+      enum: ['hour', 'day', 'week', 'month', 'year'],
+    }).notNull(),
     mode: text('mode', { enum: ['from_completion', 'fixed_schedule'] }).notNull(),
     timezone: text('timezone').notNull(),
     /** Origin of the fixed grid (= first due date, or the last explicit reschedule). */
@@ -163,10 +168,7 @@ export const actions = pgTable(
     check('actions_interval_ck', sql`${t.intervalValue} between 1 and 999`),
     check('actions_status_ck', sql`${t.status} in ('active', 'paused', 'archived')`),
     check('actions_mode_ck', sql`${t.mode} in ('from_completion', 'fixed_schedule')`),
-    check(
-      'actions_unit_ck',
-      sql`${t.intervalUnit} in ('hour', 'day', 'week', 'month', 'year')`,
-    ),
+    check('actions_unit_ck', sql`${t.intervalUnit} in ('hour', 'day', 'week', 'month', 'year')`),
   ],
 );
 
@@ -214,7 +216,10 @@ export const pushSubscriptions = pgTable(
     lastSuccessAt: tstz('last_success_at'),
     failureCount: integer('failure_count').notNull().default(0),
   },
-  (t) => [uniqueIndex('push_subscriptions_endpoint_uq').on(t.endpoint), index('push_subscriptions_user_idx').on(t.userId)],
+  (t) => [
+    uniqueIndex('push_subscriptions_endpoint_uq').on(t.endpoint),
+    index('push_subscriptions_user_idx').on(t.userId),
+  ],
 );
 
 /**

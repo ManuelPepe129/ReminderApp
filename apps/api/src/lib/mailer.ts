@@ -53,9 +53,11 @@ function layout(title: string, bodyHtml: string, cta?: { label: string; url: str
 const STRINGS = {
   it: {
     magicSubject: 'Il tuo link di accesso',
-    magicBody: 'Usa questo link per accedere. Scade tra 15 minuti ed è utilizzabile una sola volta.',
+    magicBody:
+      'Usa questo link per accedere. Scade tra 15 minuti ed è utilizzabile una sola volta.',
     magicCta: 'Accedi',
-    inviteSubject: (inviter: string, list: string) => `${inviter} ti ha invitato nella lista "${list}"`,
+    inviteSubject: (inviter: string, list: string) =>
+      `${inviter} ti ha invitato nella lista "${list}"`,
     inviteBody: (inviter: string, list: string) =>
       `${inviter} ti ha invitato a condividere la lista "${list}". L'invito scade tra 7 giorni.`,
     inviteCta: 'Apri invito',
@@ -105,10 +107,14 @@ export function invitationEmail(
     to,
     subject: s.inviteSubject(inviter, listName),
     text: `${s.inviteBody(inviter, listName)}\n\n${url}`,
-    html: layout(s.inviteSubject(inviter, listName), `<p>${escapeHtml(s.inviteBody(inviter, listName))}</p>`, {
-      label: s.inviteCta,
-      url,
-    }),
+    html: layout(
+      s.inviteSubject(inviter, listName),
+      `<p>${escapeHtml(s.inviteBody(inviter, listName))}</p>`,
+      {
+        label: s.inviteCta,
+        url,
+      },
+    ),
   };
 }
 
@@ -126,6 +132,9 @@ export function dueEmail(
     to,
     subject,
     text: `${s.dueBody(title, when)}\n\n${url}`,
-    html: layout(subject, `<p>${escapeHtml(s.dueBody(title, when))}</p>`, { label: s.openCta, url }),
+    html: layout(subject, `<p>${escapeHtml(s.dueBody(title, when))}</p>`, {
+      label: s.openCta,
+      url,
+    }),
   };
 }

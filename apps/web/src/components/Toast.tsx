@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '../api/client';
 
@@ -50,7 +58,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((x) => (
           <div key={x.id} className={`toast ${x.kind === 'error' ? 'error' : ''}`}>
             <span className="spacer">{x.message}</span>
-            <button type="button" className="btn" onClick={() => dismiss(x.id)} aria-label={t('common.close')}>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => dismiss(x.id)}
+              aria-label={t('common.close')}
+            >
               ✕
             </button>
           </div>

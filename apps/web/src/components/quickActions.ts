@@ -19,7 +19,8 @@ export function useQuickActions() {
   const m = useActionMutations();
 
   const onError = (err: unknown) => {
-    if (err instanceof ApiError && err.code === 'stale_occurrence') toast.show(t('action.stale'), 'error');
+    if (err instanceof ApiError && err.code === 'stale_occurrence')
+      toast.show(t('action.stale'), 'error');
     else toast.error(err);
   };
 
@@ -28,7 +29,9 @@ export function useQuickActions() {
     complete(id: string, title: string, expectedDueAt?: string) {
       m.complete
         .mutateAsync({ id, title, ...(expectedDueAt ? { expectedDueAt } : {}) })
-        .then((a) => toast.show(t('action.completedToast', { title, when: formatWhen(a.effectiveDueAt, tz) })))
+        .then((a) =>
+          toast.show(t('action.completedToast', { title, when: formatWhen(a.effectiveDueAt, tz) })),
+        )
         .catch(onError);
     },
     snooze(id: string, title: string, until: Date) {

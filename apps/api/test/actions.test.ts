@@ -14,7 +14,10 @@ afterAll(async () => ctx.close());
 
 describe('action CRUD', () => {
   it('creates, reads, updates and deletes', async () => {
-    const res = await u.post('/api/actions', actionInput(listId, { notes: 'Solo il basilico', category: 'Piante' }));
+    const res = await u.post(
+      '/api/actions',
+      actionInput(listId, { notes: 'Solo il basilico', category: 'Piante' }),
+    );
     expect(res.statusCode).toBe(201);
     const a = res.json();
     expect(a).toMatchObject({
@@ -27,18 +30,26 @@ describe('action CRUD', () => {
       category: 'Piante',
     });
 
-    const upd = await u.patch(`/api/actions/${a.id}`, { title: 'Innaffiare tutto', intervalValue: 2 });
+    const upd = await u.patch(`/api/actions/${a.id}`, {
+      title: 'Innaffiare tutto',
+      intervalValue: 2,
+    });
     expect(upd.json()).toMatchObject({ title: 'Innaffiare tutto', intervalValue: 2 });
 
     expect((await u.patch(`/api/actions/${a.id}`, {})).statusCode).toBe(400);
-    expect((await u.patch(`/api/actions/${a.id}`, { intervalUnit: 'minute' })).statusCode).toBe(400);
+    expect((await u.patch(`/api/actions/${a.id}`, { intervalUnit: 'minute' })).statusCode).toBe(
+      400,
+    );
 
     expect((await u.del(`/api/actions/${a.id}`)).statusCode).toBe(204);
     expect((await u.get(`/api/actions/${a.id}`)).statusCode).toBe(404);
   });
 
   it('rejects an invalid payload', async () => {
-    const res = await u.post('/api/actions', actionInput(listId, { title: '<b>' + 'x'.repeat(200), timezone: 'X/Y' }));
+    const res = await u.post(
+      '/api/actions',
+      actionInput(listId, { title: '<b>' + 'x'.repeat(200), timezone: 'X/Y' }),
+    );
     expect(res.statusCode).toBe(400);
   });
 
@@ -77,7 +88,12 @@ describe('main flow: create → overdue → done → rescheduled', () => {
     const a = (
       await u.post(
         '/api/actions',
-        actionInput(listId, { title: 'Pile', mode: 'from_completion', intervalValue: 6, intervalUnit: 'month' }),
+        actionInput(listId, {
+          title: 'Pile',
+          mode: 'from_completion',
+          intervalValue: 6,
+          intervalUnit: 'month',
+        }),
       )
     ).json();
     ctx.clock.set('2025-06-15T16:30:00Z');
@@ -89,19 +105,33 @@ describe('main flow: create → overdue → done → rescheduled', () => {
   it('accepts an explicit past completion time but not a future one', async () => {
     ctx.clock.set('2025-06-20T10:00:00Z');
     const a = (
-      await u.post('/api/actions', actionInput(listId, { mode: 'from_completion', intervalUnit: 'day', intervalValue: 3 }))
+      await u.post(
+        '/api/actions',
+        actionInput(listId, { mode: 'from_completion', intervalUnit: 'day', intervalValue: 3 }),
+      )
     ).json();
-    const future = await u.post(`/api/actions/${a.id}/complete`, { completedAt: '2025-06-21T10:00:00Z' });
+    const future = await u.post(`/api/actions/${a.id}/complete`, {
+      completedAt: '2025-06-21T10:00:00Z',
+    });
     expect(future.statusCode).toBe(400);
-    const past = await u.post(`/api/actions/${a.id}/complete`, { completedAt: '2025-06-19T10:00:00Z' });
+    const past = await u.post(`/api/actions/${a.id}/complete`, {
+      completedAt: '2025-06-19T10:00:00Z',
+    });
     expect(past.json().dueAt).toBe('2025-06-22T10:00:00.000Z');
   });
 
   it('detects a concurrent completion (stale occurrence)', async () => {
     ctx.clock.set('2025-06-20T10:00:00Z');
-    const a = (await u.post('/api/actions', actionInput(listId, { firstDueAt: '2025-06-19T07:00:00Z' }))).json();
-    expect((await u.post(`/api/actions/${a.id}/complete`, { expectedDueAt: a.effectiveDueAt })).statusCode).toBe(200);
-    const second = await u.post(`/api/actions/${a.id}/complete`, { expectedDueAt: a.effectiveDueAt });
+    const a = (
+      await u.post('/api/actions', actionInput(listId, { firstDueAt: '2025-06-19T07:00:00Z' }))
+    ).json();
+    expect(
+      (await u.post(`/api/actions/${a.id}/complete`, { expectedDueAt: a.effectiveDueAt }))
+        .statusCode,
+    ).toBe(200);
+    const second = await u.post(`/api/actions/${a.id}/complete`, {
+      expectedDueAt: a.effectiveDueAt,
+    });
     expect(second.statusCode).toBe(409);
     expect(second.json().error).toBe('stale_occurrence');
   });
@@ -121,7 +151,11 @@ describe('snooze', () => {
     const done = (await u.post(`/api/actions/${a.id}/complete`, {})).json();
     expect(done).toMatchObject({ dueAt: '2025-06-19T07:00:00.000Z', snoozedUntil: null });
     const events = (await u.get(`/api/actions/${a.id}/events`)).json();
-    expect(events.map((e: { type: string }) => e.type)).toEqual(['completed', 'snoozed', 'created']);
+    expect(events.map((e: { type: string }) => e.type)).toEqual([
+      'completed',
+      'snoozed',
+      'created',
+    ]);
   });
 
   it('rejects snoozing into the past', async () => {
@@ -133,13 +167,17 @@ describe('snooze', () => {
 
 describe('pause / archive', () => {
   it('paused actions cannot be completed and archived ones are hidden by default', async () => {
-    const a = (await u.post('/api/actions', actionInput(listId, { title: 'Scadenza bollo' }))).json();
+    const a = (
+      await u.post('/api/actions', actionInput(listId, { title: 'Scadenza bollo' }))
+    ).json();
     await u.patch(`/api/actions/${a.id}`, { status: 'paused' });
     expect((await u.post(`/api/actions/${a.id}/complete`, {})).statusCode).toBe(409);
     await u.patch(`/api/actions/${a.id}`, { status: 'archived' });
     const ids = (await u.get('/api/actions')).json().map((x: { id: string }) => x.id);
     expect(ids).not.toContain(a.id);
-    const archived = (await u.get('/api/actions?status=archived')).json().map((x: { id: string }) => x.id);
+    const archived = (await u.get('/api/actions?status=archived'))
+      .json()
+      .map((x: { id: string }) => x.id);
     expect(archived).toContain(a.id);
   });
 });
@@ -149,10 +187,21 @@ describe('filters and calendar', () => {
     const other = await newUser(ctx, 'Filtro');
     const l = await other.firstListId();
     await other.post('/api/actions', actionInput(l, { title: 'A', category: 'Casa' }));
-    await other.post('/api/actions', actionInput(l, { title: 'B', category: 'Auto', assigneeId: other.user!.id }));
-    expect((await other.get('/api/actions?category=Casa')).json().map((a: { title: string }) => a.title)).toEqual(['A']);
-    expect((await other.get('/api/actions?assigneeId=me')).json().map((a: { title: string }) => a.title)).toEqual(['B']);
-    expect((await other.get('/api/actions?assigneeId=none')).json().map((a: { title: string }) => a.title)).toEqual(['A']);
+    await other.post(
+      '/api/actions',
+      actionInput(l, { title: 'B', category: 'Auto', assigneeId: other.user!.id }),
+    );
+    expect(
+      (await other.get('/api/actions?category=Casa')).json().map((a: { title: string }) => a.title),
+    ).toEqual(['A']);
+    expect(
+      (await other.get('/api/actions?assigneeId=me')).json().map((a: { title: string }) => a.title),
+    ).toEqual(['B']);
+    expect(
+      (await other.get('/api/actions?assigneeId=none'))
+        .json()
+        .map((a: { title: string }) => a.title),
+    ).toEqual(['A']);
     expect((await other.get('/api/categories')).json()).toEqual(['Auto', 'Casa']);
   });
 
@@ -161,7 +210,10 @@ describe('filters and calendar', () => {
     const l = await cal.firstListId();
     ctx.clock.set('2025-06-01T08:00:00Z');
     const a = (
-      await cal.post('/api/actions', actionInput(l, { title: 'Settimanale', firstDueAt: '2025-06-02T07:00:00Z' }))
+      await cal.post(
+        '/api/actions',
+        actionInput(l, { title: 'Settimanale', firstDueAt: '2025-06-02T07:00:00Z' }),
+      )
     ).json();
     ctx.clock.set('2025-06-02T10:00:00Z');
     await cal.post(`/api/actions/${a.id}/complete`, {}); // completes Jun 2 → next Jun 9
@@ -169,7 +221,9 @@ describe('filters and calendar', () => {
 
     const res = await cal.get('/api/calendar?from=2025-06-01T00:00:00Z&to=2025-06-30T00:00:00Z');
     expect(res.statusCode).toBe(200);
-    const occ = res.json().map((o: { at: string; status: string; current: boolean }) => [o.at, o.status, o.current]);
+    const occ = res
+      .json()
+      .map((o: { at: string; status: string; current: boolean }) => [o.at, o.status, o.current]);
     expect(occ).toEqual([
       ['2025-06-02T10:00:00.000Z', 'completed', false],
       ['2025-06-09T07:00:00.000Z', 'overdue', true],

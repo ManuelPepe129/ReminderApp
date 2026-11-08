@@ -59,7 +59,9 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     const status = (err as FastifyError).statusCode ?? 500;
     if (status === 429) return reply.code(429).send({ error: 'rate_limited' });
     if (status < 500) {
-      return reply.code(status).send({ error: (err as FastifyError).code ?? 'bad_request', message: err.message });
+      return reply
+        .code(status)
+        .send({ error: (err as FastifyError).code ?? 'bad_request', message: err.message });
     }
     req.log.error({ err }, 'unhandled error');
     return reply.code(500).send({ error: 'internal_error' });

@@ -23,7 +23,9 @@ test('create → overdue → done → rescheduled', async ({ page }) => {
   await expect(page.getByRole('region', { name: /Scadute/ })).toHaveCount(0);
   await expect(page.getByText('Nessuna azione scaduta')).toBeVisible();
   const upcoming = page.getByRole('region', { name: 'In arrivo' });
-  await expect(upcoming.getByRole('listitem').filter({ hasText: 'Innaffiare le piante' })).toContainText('Tra 4 giorni');
+  await expect(
+    upcoming.getByRole('listitem').filter({ hasText: 'Innaffiare le piante' }),
+  ).toContainText('Tra 4 giorni');
 
   // History records who did it.
   await upcoming.getByRole('link', { name: 'Innaffiare le piante' }).click();
@@ -55,7 +57,12 @@ test('snooze with a shortcut keeps the rule', async ({ page }) => {
 
 test('calendar shows completed and projected occurrences', async ({ page }) => {
   await register(page, 'Calendario');
-  await createAction(page, { title: 'Pulizie', due: new Date(Date.now() - HOUR), every: 1, unit: 'day' });
+  await createAction(page, {
+    title: 'Pulizie',
+    due: new Date(Date.now() - HOUR),
+    every: 1,
+    unit: 'day',
+  });
   await page.getByRole('button', { name: /Segna “Pulizie” come fatta/ }).click();
   await expect(page.getByText('Nessuna azione scaduta')).toBeVisible();
 

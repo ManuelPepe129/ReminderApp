@@ -47,7 +47,9 @@ export function SnoozeMenu({
   };
 
   const onMenuKey = (e: React.KeyboardEvent) => {
-    const items = Array.from(wrap.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []);
+    const items = Array.from(
+      wrap.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [],
+    );
     const idx = items.indexOf(document.activeElement as HTMLButtonElement);
     if (e.key === 'Escape') {
       setOpen(false);
@@ -76,9 +78,20 @@ export function SnoozeMenu({
         {t('action.snooze')}
       </button>
       {open && (
-        <div className="menu" role="menu" id={menuId} aria-label={t('action.snoozeTitle', { title })} onKeyDown={onMenuKey}>
+        <div
+          className="menu"
+          role="menu"
+          id={menuId}
+          aria-label={t('action.snoozeTitle', { title })}
+          onKeyDown={onMenuKey}
+        >
           {SNOOZE_PRESETS.map((p) => (
-            <button key={p} type="button" role="menuitem" onClick={() => pick(resolveSnoozePreset(p, new Date(), tz))}>
+            <button
+              key={p}
+              type="button"
+              role="menuitem"
+              onClick={() => pick(resolveSnoozePreset(p, new Date(), tz))}
+            >
               {t(`action.snooze_${p}`)}
             </button>
           ))}
@@ -105,11 +118,7 @@ export function SnoozeMenu({
             <button type="button" className="btn" onClick={() => setCustom(false)}>
               {t('common.cancel')}
             </button>
-            <button
-              type="submit"
-              form={`${menuId}-form`}
-              className="btn btn-primary"
-            >
+            <button type="submit" form={`${menuId}-form`} className="btn btn-primary">
               {t('action.snooze')}
             </button>
           </>

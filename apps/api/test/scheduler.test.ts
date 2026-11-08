@@ -46,7 +46,10 @@ describe('isQuietTime', () => {
 
 describe('notification worker', () => {
   it('sends a push when an action becomes due, exactly once', async () => {
-    await anna.post('/api/actions', actionInput(listId, { title: 'Innaffiare', firstDueAt: '2025-06-10T09:00:00Z' }));
+    await anna.post(
+      '/api/actions',
+      actionInput(listId, { title: 'Innaffiare', firstDueAt: '2025-06-10T09:00:00Z' }),
+    );
     expect((await tick()).sent).toBe(0); // not due yet
 
     ctx.clock.set('2025-06-10T09:00:30Z');
@@ -62,7 +65,9 @@ describe('notification worker', () => {
   });
 
   it('notifies again for the next occurrence after completion', async () => {
-    const a = (await anna.get('/api/actions')).json().find((x: { title: string }) => x.title === 'Innaffiare');
+    const a = (await anna.get('/api/actions'))
+      .json()
+      .find((x: { title: string }) => x.title === 'Innaffiare');
     await anna.post(`/api/actions/${a.id}/complete`, {});
     ctx.clock.set('2025-06-17T09:01:00Z');
     await tick();
@@ -70,7 +75,9 @@ describe('notification worker', () => {
   });
 
   it('a snooze creates a new due notification at the new time', async () => {
-    const a = (await anna.get('/api/actions')).json().find((x: { title: string }) => x.title === 'Innaffiare');
+    const a = (await anna.get('/api/actions'))
+      .json()
+      .find((x: { title: string }) => x.title === 'Innaffiare');
     await anna.post(`/api/actions/${a.id}/snooze`, { until: '2025-06-17T12:00:00Z' });
     await tick();
     expect(ctx.push.sent).toHaveLength(0);
@@ -84,20 +91,31 @@ describe('notification worker', () => {
     ctx.clock.set('2025-06-20T08:00:00Z');
     await anna.post(
       '/api/actions',
-      actionInput(listId, { title: 'Bollo auto', firstDueAt: '2025-06-21T08:00:00Z', leadMinutes: 1440, intervalUnit: 'year' }),
+      actionInput(listId, {
+        title: 'Bollo auto',
+        firstDueAt: '2025-06-21T08:00:00Z',
+        leadMinutes: 1440,
+        intervalUnit: 'year',
+      }),
     );
     await tick();
     expect(ctx.push.sent.map((s) => s.payload.title)).toEqual(['In arrivo: Bollo auto']);
     ctx.clock.set('2025-06-21T08:00:05Z');
     await tick();
-    expect(ctx.push.sent.map((s) => s.payload.title)).toEqual(['In arrivo: Bollo auto', 'Scaduta: Bollo auto']);
+    expect(ctx.push.sent.map((s) => s.payload.title)).toEqual([
+      'In arrivo: Bollo auto',
+      'Scaduta: Bollo auto',
+    ]);
   });
 
   it('falls back to e-mail when the user has no push subscription', async () => {
     const bruno = await newUser(ctx, 'Bruno');
     const l = await bruno.firstListId();
     ctx.clock.set('2025-06-22T07:00:00Z');
-    await bruno.post('/api/actions', actionInput(l, { title: 'Pile', firstDueAt: '2025-06-22T07:30:00Z' }));
+    await bruno.post(
+      '/api/actions',
+      actionInput(l, { title: 'Pile', firstDueAt: '2025-06-22T07:30:00Z' }),
+    );
     ctx.clock.set('2025-06-22T07:31:00Z');
     const r = await tick();
     expect(r.email).toBe(1);
@@ -107,10 +125,17 @@ describe('notification worker', () => {
   it('respects quiet hours (deferred, then delivered) and channel preferences', async () => {
     const carla = await newUser(ctx, 'Carla');
     const l = await carla.firstListId();
-    await carla.patch('/api/me/preferences', { quietStart: '22:00', quietEnd: '07:00', emailEnabled: false });
+    await carla.patch('/api/me/preferences', {
+      quietStart: '22:00',
+      quietEnd: '07:00',
+      emailEnabled: false,
+    });
     await subscribe(carla, 'https://push.example/carla');
     ctx.clock.set('2025-06-22T19:00:00Z');
-    await carla.post('/api/actions', actionInput(l, { title: 'Notturna', firstDueAt: '2025-06-22T21:00:00Z' }));
+    await carla.post(
+      '/api/actions',
+      actionInput(l, { title: 'Notturna', firstDueAt: '2025-06-22T21:00:00Z' }),
+    );
 
     ctx.clock.set('2025-06-22T21:05:00Z'); // 23:05 in Rome: quiet
     const quiet = await tick();
@@ -130,10 +155,17 @@ describe('notification worker', () => {
     const { url } = (await owner.post(`/api/lists/${shared}/invitations`, {})).json();
     await member.post(`/api/invitations/${url.split('/').pop()}/accept`);
     ctx.clock.set('2025-06-24T08:00:00Z');
-    await owner.post('/api/actions', actionInput(shared, { title: 'Tutti', firstDueAt: '2025-06-24T08:10:00Z' }));
     await owner.post(
       '/api/actions',
-      actionInput(shared, { title: 'Solo member', firstDueAt: '2025-06-24T08:10:00Z', assigneeId: member.user!.id }),
+      actionInput(shared, { title: 'Tutti', firstDueAt: '2025-06-24T08:10:00Z' }),
+    );
+    await owner.post(
+      '/api/actions',
+      actionInput(shared, {
+        title: 'Solo member',
+        firstDueAt: '2025-06-24T08:10:00Z',
+        assigneeId: member.user!.id,
+      }),
     );
     ctx.clock.set('2025-06-24T08:11:00Z');
     await tick();
@@ -148,7 +180,10 @@ describe('notification worker', () => {
   it('removes expired push subscriptions', async () => {
     ctx.push.goneEndpoints.add('https://push.example/anna-phone');
     ctx.clock.set('2025-06-25T08:00:00Z');
-    await anna.post('/api/actions', actionInput(listId, { title: 'Gone', firstDueAt: '2025-06-25T08:01:00Z' }));
+    await anna.post(
+      '/api/actions',
+      actionInput(listId, { title: 'Gone', firstDueAt: '2025-06-25T08:01:00Z' }),
+    );
     ctx.clock.set('2025-06-25T08:02:00Z');
     await tick();
     const subs = await ctx.db
@@ -164,14 +199,25 @@ describe('notification worker', () => {
     const dora = await newUser(ctx, 'Dora');
     const l = await dora.firstListId();
     ctx.clock.set('2025-06-26T08:00:00Z');
-    const paused = (await dora.post('/api/actions', actionInput(l, { title: 'Pausa', firstDueAt: '2025-06-26T08:01:00Z' }))).json();
+    const paused = (
+      await dora.post(
+        '/api/actions',
+        actionInput(l, { title: 'Pausa', firstDueAt: '2025-06-26T08:01:00Z' }),
+      )
+    ).json();
     await dora.patch(`/api/actions/${paused.id}`, { status: 'paused' });
-    await dora.post('/api/actions', actionInput(l, { title: 'Antica', firstDueAt: '2025-06-01T08:00:00Z' }));
+    await dora.post(
+      '/api/actions',
+      actionInput(l, { title: 'Antica', firstDueAt: '2025-06-01T08:00:00Z' }),
+    );
     ctx.clock.set('2025-06-26T08:05:00Z');
     await tick();
     expect(ctx.mailer.sent.filter((m) => m.to === 'dora@example.com')).toHaveLength(0);
     const [d] = await ctx.db.select().from(users).where(eq(users.email, 'dora@example.com'));
-    const logs = await ctx.db.select().from(notificationLog).where(eq(notificationLog.userId, d!.id));
+    const logs = await ctx.db
+      .select()
+      .from(notificationLog)
+      .where(eq(notificationLog.userId, d!.id));
     expect(logs).toHaveLength(0);
   });
 });

@@ -21,7 +21,11 @@ describe('invitations', () => {
     expect(url).toMatch(/^http:\/\/localhost:5173\/inviti\//);
 
     const preview = await (await newUser(ctx, 'Viewer')).get(`/api/invitations/${tokenOf(url)}`);
-    expect(preview.json()).toMatchObject({ listName: 'Lavoro', invitedBy: 'Owner', role: 'editor' });
+    expect(preview.json()).toMatchObject({
+      listName: 'Lavoro',
+      invitedBy: 'Owner',
+      role: 'editor',
+    });
 
     const a = await newUser(ctx, 'LinkA');
     const b = await newUser(ctx, 'LinkB');
@@ -37,7 +41,9 @@ describe('invitations', () => {
   });
 
   it('e-mail invitations are sent by mail and single-use', async () => {
-    const res = await owner.post(`/api/lists/${listId}/invitations`, { email: 'Guest@Example.com' });
+    const res = await owner.post(`/api/lists/${listId}/invitations`, {
+      email: 'Guest@Example.com',
+    });
     expect(res.statusCode).toBe(201);
     const mail = ctx.mailer.last()!;
     expect(mail.to).toBe('guest@example.com');
@@ -55,7 +61,9 @@ describe('invitations', () => {
     const { url, invitation } = (await owner.post(`/api/lists/${listId}/invitations`, {})).json();
     const pending = (await owner.get(`/api/lists/${listId}/invitations`)).json();
     expect(pending.map((i: { id: string }) => i.id)).toContain(invitation.id);
-    expect((await owner.del(`/api/lists/${listId}/invitations/${invitation.id}`)).statusCode).toBe(204);
+    expect((await owner.del(`/api/lists/${listId}/invitations/${invitation.id}`)).statusCode).toBe(
+      204,
+    );
     const x = await newUser(ctx, 'Revoked');
     expect((await x.post(`/api/invitations/${tokenOf(url)}/accept`)).statusCode).toBe(404);
   });

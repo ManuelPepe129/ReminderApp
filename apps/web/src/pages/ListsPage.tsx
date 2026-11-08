@@ -5,7 +5,16 @@ import { useListMutations, useLists } from '../api/hooks';
 import { ChevronRightIcon, PlusIcon } from '../components/Icons';
 import { useToast } from '../components/Toast';
 
-export const LIST_COLORS = ['#2563eb', '#16a34a', '#dc2626', '#d97706', '#9333ea', '#0891b2', '#db2777', '#4b5563'];
+export const LIST_COLORS = [
+  '#2563eb',
+  '#16a34a',
+  '#dc2626',
+  '#d97706',
+  '#9333ea',
+  '#0891b2',
+  '#db2777',
+  '#4b5563',
+];
 
 export function ListsPage() {
   const { t } = useTranslation();
@@ -22,8 +31,16 @@ export function ListsPage() {
       <ul className="cards">
         {lists.data?.map((l) => (
           <li key={l.id}>
-            <Link to={`/liste/${l.id}`} className="card row" style={{ textDecoration: 'none', color: 'inherit', minHeight: 64 }}>
-              <span className="list-swatch" style={{ background: l.color, width: 18, height: 18 }} aria-hidden />
+            <Link
+              to={`/liste/${l.id}`}
+              className="card row"
+              style={{ textDecoration: 'none', color: 'inherit', minHeight: 64 }}
+            >
+              <span
+                className="list-swatch"
+                style={{ background: l.color, width: 18, height: 18 }}
+                aria-hidden
+              />
               <span className="stack spacer" style={{ gap: 0 }}>
                 <strong>{l.name}</strong>
                 <span className="small muted">
@@ -50,7 +67,14 @@ export function ListsPage() {
         <h2>{t('lists.new')}</h2>
         <div className="field">
           <label htmlFor={`${id}-name`}>{t('lists.name')}</label>
-          <input id={`${id}-name`} value={name} maxLength={60} required placeholder={t('lists.namePlaceholder')} onChange={(e) => setName(e.target.value)} />
+          <input
+            id={`${id}-name`}
+            value={name}
+            maxLength={60}
+            required
+            placeholder={t('lists.namePlaceholder')}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <ColorPicker value={color} onChange={setColor} />
         <div>
@@ -73,7 +97,14 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (c: 
       <div className="row">
         {LIST_COLORS.map((c) => (
           <label key={c} className="swatch-option">
-            <input type="radio" name={name} value={c} checked={value === c} onChange={() => onChange(c)} className="visually-hidden" />
+            <input
+              type="radio"
+              name={name}
+              value={c}
+              checked={value === c}
+              onChange={() => onChange(c)}
+              className="visually-hidden"
+            />
             <span
               aria-hidden
               style={{

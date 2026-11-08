@@ -5,7 +5,10 @@ import type { ActionFilters } from '../api/hooks';
 import { useCategories, useLists, useMembers } from '../api/hooks';
 
 /** Filters are kept in the URL (?list=&category=&assignee=) so views are shareable/bookmarkable. */
-export function useFilters(): [ActionFilters, (patch: Partial<Record<'list' | 'category' | 'assignee', string>>) => void] {
+export function useFilters(): [
+  ActionFilters,
+  (patch: Partial<Record<'list' | 'category' | 'assignee', string>>) => void,
+] {
   const [params, setParams] = useSearchParams();
   const filters = useMemo<ActionFilters>(
     () => ({

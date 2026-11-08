@@ -44,7 +44,8 @@ const en: DeepString<Messages> = {
     haveAccount: 'Already have an account?',
     or: 'or',
     magicLink: 'Email me a sign-in link',
-    magicLinkSent: 'If the address is valid you will shortly receive an email with a sign-in link (valid for 15 minutes).',
+    magicLinkSent:
+      'If the address is valid you will shortly receive an email with a sign-in link (valid for 15 minutes).',
     verifying: 'Verifying link…',
     invalidLink: 'The link is invalid or expired. Request a new one.',
     invalid_credentials: 'Wrong email or password.',
@@ -104,9 +105,11 @@ const en: DeepString<Messages> = {
   },
   mode: {
     from_completion: 'From last completion',
-    from_completion_hint: 'The next due date counts from when you did it (e.g. replacing batteries).',
+    from_completion_hint:
+      'The next due date counts from when you did it (e.g. replacing batteries).',
     fixed_schedule: 'Fixed schedule',
-    fixed_schedule_hint: 'Follows a regular grid, regardless of when you did it (e.g. cleaning every Monday).',
+    fixed_schedule_hint:
+      'Follows a regular grid, regardless of when you did it (e.g. cleaning every Monday).',
   },
   action: {
     done: 'Done',
@@ -271,7 +274,8 @@ const en: DeepString<Messages> = {
     pushEnable: 'Enable on this device',
     pushDisable: 'Disable on this device',
     pushActive: 'Enabled on this device.',
-    pushUnsupported: 'This browser does not support push notifications. On iPhone, add the app to the Home Screen first.',
+    pushUnsupported:
+      'This browser does not support push notifications. On iPhone, add the app to the Home Screen first.',
     pushNotConfigured: 'Push notifications are not configured on the server.',
     pushDenied: 'Notifications are blocked in the browser settings.',
     pushTest: 'Send test notification',

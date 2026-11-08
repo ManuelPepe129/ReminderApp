@@ -101,7 +101,11 @@ export async function startSession(
   setSessionCookie(reply, deps, token, expiresAt);
 }
 
-export async function endSession(req: FastifyRequest, reply: FastifyReply, deps: AppDeps): Promise<void> {
+export async function endSession(
+  req: FastifyRequest,
+  reply: FastifyReply,
+  deps: AppDeps,
+): Promise<void> {
   if (req.sessionId) await deps.db.delete(sessions).where(eq(sessions.id, req.sessionId));
   reply.clearCookie(SESSION_COOKIE, { path: '/' });
 }

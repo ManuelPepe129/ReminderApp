@@ -70,7 +70,11 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): Config {
     mailFrom: e.MAIL_FROM,
     vapid:
       e.VAPID_PUBLIC_KEY && e.VAPID_PRIVATE_KEY
-        ? { publicKey: e.VAPID_PUBLIC_KEY, privateKey: e.VAPID_PRIVATE_KEY, subject: e.VAPID_SUBJECT }
+        ? {
+            publicKey: e.VAPID_PUBLIC_KEY,
+            privateKey: e.VAPID_PRIVATE_KEY,
+            subject: e.VAPID_SUBJECT,
+          }
         : null,
     workerIntervalSeconds: e.WORKER_INTERVAL_SECONDS,
     inviteRateLimitPerHour: e.INVITE_RATE_LIMIT_PER_HOUR,

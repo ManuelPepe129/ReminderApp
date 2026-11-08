@@ -52,7 +52,10 @@ export async function listRoutes(app: FastifyInstance, deps: AppDeps): Promise<v
         memberCount: sql<number>`(select count(*)::int from ${listMembers} lm where lm.list_id = ${lists.id})`,
       })
       .from(lists)
-      .innerJoin(listMembers, and(eq(listMembers.listId, lists.id), eq(listMembers.userId, user.id)))
+      .innerJoin(
+        listMembers,
+        and(eq(listMembers.listId, lists.id), eq(listMembers.userId, user.id)),
+      )
       .orderBy(asc(lists.createdAt));
     return rows.map((r): ListDto => ({ ...r, createdAt: r.createdAt.toISOString() }));
   });
@@ -63,7 +66,11 @@ export async function listRoutes(app: FastifyInstance, deps: AppDeps): Promise<v
     const list = await db.transaction(async (tx) => {
       const [l] = await tx
         .insert(lists)
-        .values({ name: input.name, ...(input.color ? { color: input.color } : {}), createdBy: user.id })
+        .values({
+          name: input.name,
+          ...(input.color ? { color: input.color } : {}),
+          createdBy: user.id,
+        })
         .returning();
       if (!l) throw new Error('insert failed');
       await tx.insert(listMembers).values({ listId: l.id, userId: user.id, role: 'owner' });

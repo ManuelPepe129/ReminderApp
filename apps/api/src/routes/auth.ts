@@ -1,11 +1,6 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
-import {
-  loginSchema,
-  magicLinkRequestSchema,
-  registerSchema,
-  tokenSchema,
-} from '@reminder/shared';
+import { loginSchema, magicLinkRequestSchema, registerSchema, tokenSchema } from '@reminder/shared';
 import type { AppDeps } from '../deps';
 import { authTokens, users } from '../db/schema';
 import { endSession, requireUser, startSession } from '../auth/session';
@@ -28,7 +23,10 @@ export async function authRoutes(app: FastifyInstance, deps: AppDeps): Promise<v
 
   app.post('/api/auth/register', { config: authLimit }, async (req, reply) => {
     const input = parse(registerSchema, req.body);
-    const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, input.email));
+    const existing = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, input.email));
     if (existing.length > 0) throw conflict('email_taken');
     const user = await createUser(db, {
       email: input.email,

@@ -16,7 +16,12 @@ const BATCH = 500;
  * True when `now` falls in the user's quiet hours ("HH:MM"–"HH:MM" in their
  * time zone). Supports windows crossing midnight (e.g. 22:00–07:00).
  */
-export function isQuietTime(now: Date, tz: string, start: string | null, end: string | null): boolean {
+export function isQuietTime(
+  now: Date,
+  tz: string,
+  start: string | null,
+  end: string | null,
+): boolean {
   if (!start || !end || start === end) return false;
   const local = DateTime.fromJSDate(now, { zone: tz });
   const minutes = local.hour * 60 + local.minute;
@@ -80,7 +85,10 @@ async function findCandidates(deps: WorkerDeps, now: Date): Promise<Candidate[]>
     order by r.due_at
     limit ${BATCH}
   `);
-  const list = (Array.isArray(rows) ? rows : (rows as { rows: unknown[] }).rows) as Record<string, unknown>[];
+  const list = (Array.isArray(rows) ? rows : (rows as { rows: unknown[] }).rows) as Record<
+    string,
+    unknown
+  >[];
   return list.map((r) => ({
     actionId: String(r.action_id),
     title: String(r.title),

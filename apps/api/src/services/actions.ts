@@ -147,7 +147,12 @@ async function logEvent(
   a: Pick<ActionRow, 'id' | 'listId'>,
   type: ActionEventType,
   userId: string,
-  extra: { occurredAt?: Date; dueAt?: Date | null; newDueAt?: Date | null; note?: string | null } = {},
+  extra: {
+    occurredAt?: Date;
+    dueAt?: Date | null;
+    newDueAt?: Date | null;
+    note?: string | null;
+  } = {},
 ) {
   await db.insert(actionEvents).values({
     actionId: a.id,

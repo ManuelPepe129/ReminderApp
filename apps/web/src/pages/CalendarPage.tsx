@@ -36,7 +36,9 @@ export function CalendarPage() {
   const [params, setParams] = useSearchParams();
   const [filters] = useFilters();
 
-  const view: View = VIEWS.includes(params.get('view') as View) ? (params.get('view') as View) : 'month';
+  const view: View = VIEWS.includes(params.get('view') as View)
+    ? (params.get('view') as View)
+    : 'month';
   const today = DateTime.fromJSDate(now, { zone: tz }).startOf('day');
   const parsed = params.get('date') ? DateTime.fromISO(params.get('date')!, { zone: tz }) : null;
   const cursor = parsed?.isValid ? parsed.startOf('day') : today;
@@ -71,21 +73,40 @@ export function CalendarPage() {
       ? formatDate(cursor.toJSDate(), tz, { month: 'long', year: 'numeric' })
       : view === 'week'
         ? `${formatDate(start.toJSDate(), tz, { day: 'numeric', month: 'short' })} – ${formatDate(end.minus({ days: 1 }).toJSDate(), tz, { day: 'numeric', month: 'short', year: 'numeric' })}`
-        : formatDate(cursor.toJSDate(), tz, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        : formatDate(cursor.toJSDate(), tz, {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          });
 
-  const days = Array.from({ length: Math.round(end.diff(start, 'days').days) }, (_, i) => start.plus({ days: i }));
+  const days = Array.from({ length: Math.round(end.diff(start, 'days').days) }, (_, i) =>
+    start.plus({ days: i }),
+  );
   const weekdays = Info.weekdays('short', { locale: intlLocale() });
 
   return (
     <>
       <div className="cal-toolbar">
-        <button type="button" className="btn btn-icon" aria-label={t('calendar.prev')} onClick={() => go({ date: cursor.minus(step) })}>
+        <button
+          type="button"
+          className="btn btn-icon"
+          aria-label={t('calendar.prev')}
+          onClick={() => go({ date: cursor.minus(step) })}
+        >
           <ChevronLeftIcon />
         </button>
-        <button type="button" className="btn btn-icon" aria-label={t('calendar.next')} onClick={() => go({ date: cursor.plus(step) })}>
+        <button
+          type="button"
+          className="btn btn-icon"
+          aria-label={t('calendar.next')}
+          onClick={() => go({ date: cursor.plus(step) })}
+        >
           <ChevronRightIcon />
         </button>
-        <h1 aria-live="polite" className="cap">{heading}</h1>
+        <h1 aria-live="polite" className="cap">
+          {heading}
+        </h1>
         <span className="spacer" />
         <button type="button" className="btn" onClick={() => go({ date: today })}>
           {t('calendar.today')}
@@ -122,7 +143,11 @@ export function CalendarPage() {
             const k = d.toISODate()!;
             const occ = byDay.get(k) ?? [];
             const label = t('calendar.dayLabel', {
-              date: formatDate(d.toJSDate(), tz, { weekday: 'long', day: 'numeric', month: 'long' }),
+              date: formatDate(d.toJSDate(), tz, {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+              }),
               count: occ.length,
             });
             return (
@@ -159,9 +184,23 @@ export function CalendarPage() {
       {view === 'week' && (
         <div className="week-cols">
           {days.map((d) => (
-            <section key={d.toISODate()} className="card" style={{ padding: 10 }} aria-label={formatDate(d.toJSDate(), tz, { weekday: 'long', day: 'numeric', month: 'long' })}>
+            <section
+              key={d.toISODate()}
+              className="card"
+              style={{ padding: 10 }}
+              aria-label={formatDate(d.toJSDate(), tz, {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+              })}
+            >
               <h2 className="small cap">
-                <button type="button" className="btn btn-ghost" style={{ padding: '0 4px' }} onClick={() => go({ date: d, view: 'day' })}>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  style={{ padding: '0 4px' }}
+                  onClick={() => go({ date: d, view: 'day' })}
+                >
                   {formatDate(d.toJSDate(), tz, { weekday: 'short', day: 'numeric' })}
                 </button>
               </h2>
@@ -227,7 +266,10 @@ function OccurrenceList({
                   <CheckIcon />
                   {t('action.done')}
                 </button>
-                <SnoozeMenu title={o.title} onSnooze={(until) => quick.snooze(o.actionId, o.title, until)} />
+                <SnoozeMenu
+                  title={o.title}
+                  onSnooze={(until) => quick.snooze(o.actionId, o.title, until)}
+                />
               </span>
             )}
           </li>

@@ -1,11 +1,17 @@
 /// <reference lib="webworker" />
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
-import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
+import {
+  cleanupOutdatedCaches,
+  createHandlerBoundToURL,
+  precacheAndRoute,
+} from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { NetworkFirst } from 'workbox-strategies';
 
-declare const self: ServiceWorkerGlobalScope & { __WB_MANIFEST: (string | { url: string; revision: string | null })[] };
+declare const self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: (string | { url: string; revision: string | null })[];
+};
 
 self.skipWaiting();
 clientsClaim();
@@ -13,15 +19,18 @@ clientsClaim();
 // ---- App shell (offline) ----
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
-registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html'), { denylist: [/^\/api\//] }));
+registerRoute(
+  new NavigationRoute(createHandlerBoundToURL('index.html'), { denylist: [/^\/api\//] }),
+);
 
 // ---- API reads: network first, cached copy when offline ----
-// Only idempotent GETs of app data; auth, invitations and the SSE stream are never cached.
+// Only idempotent GETs of app data (and the current user, so the app opens offline).
+// Login, invitations and the SSE stream are never cached; the cache is dropped on logout.
 registerRoute(
   ({ url, request }) =>
     request.method === 'GET' &&
     url.origin === self.location.origin &&
-    /^\/api\/(actions|lists|calendar|categories|me\/preferences)/.test(url.pathname),
+    /^\/api\/(actions|lists|calendar|categories|me\/preferences|auth\/me$)/.test(url.pathname),
   new NetworkFirst({
     cacheName: 'api',
     networkTimeoutSeconds: 6,

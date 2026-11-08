@@ -27,7 +27,8 @@ function AuthShell({ title, children }: { title: string; children: ReactNode }) 
 
 function errorText(t: (k: string) => string, err: unknown): string {
   if (err instanceof ApiError) {
-    if (err.code === 'invalid_credentials' || err.code === 'email_taken') return t(`auth.${err.code}`);
+    if (err.code === 'invalid_credentials' || err.code === 'email_taken')
+      return t(`auth.${err.code}`);
     if (i18n.exists(`errors.${err.code}`)) return t(`errors.${err.code}`);
   }
   return t('errors.generic');
@@ -62,7 +63,10 @@ export function LoginPage() {
     setBusy(true);
     setError(null);
     try {
-      signedIn(await api<UserDto>('/auth/login', { method: 'POST', body: { email, password } }), next);
+      signedIn(
+        await api<UserDto>('/auth/login', { method: 'POST', body: { email, password } }),
+        next,
+      );
     } catch (err) {
       setError(errorText(t, err));
     } finally {
@@ -102,7 +106,14 @@ export function LoginPage() {
       <form className="stack" onSubmit={login}>
         <div className="field">
           <label htmlFor={`${id}-email`}>{t('auth.email')}</label>
-          <input id={`${id}-email`} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            id={`${id}-email`}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div className="field">
           <label htmlFor={`${id}-password`}>{t('auth.password')}</label>
@@ -124,7 +135,8 @@ export function LoginPage() {
         {t('auth.magicLink')}
       </button>
       <p className="small muted" style={{ textAlign: 'center', margin: 0 }}>
-        {t('auth.noAccount')} <Link to={`/registrati?next=${encodeURIComponent(next)}`}>{t('auth.register')}</Link>
+        {t('auth.noAccount')}{' '}
+        <Link to={`/registrati?next=${encodeURIComponent(next)}`}>{t('auth.register')}</Link>
       </p>
     </AuthShell>
   );
@@ -178,11 +190,25 @@ export function RegisterPage() {
       <form className="stack" onSubmit={submit}>
         <div className="field">
           <label htmlFor={`${id}-name`}>{t('auth.displayName')}</label>
-          <input id={`${id}-name`} autoComplete="name" required maxLength={80} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+          <input
+            id={`${id}-name`}
+            autoComplete="name"
+            required
+            maxLength={80}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
         </div>
         <div className="field">
           <label htmlFor={`${id}-email`}>{t('auth.email')}</label>
-          <input id={`${id}-email`} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            id={`${id}-email`}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div className="field">
           <label htmlFor={`${id}-password`}>{t('auth.password')}</label>
@@ -205,7 +231,8 @@ export function RegisterPage() {
         </button>
       </form>
       <p className="small muted" style={{ textAlign: 'center', margin: 0 }}>
-        {t('auth.haveAccount')} <Link to={`/login?next=${encodeURIComponent(next)}`}>{t('auth.login')}</Link>
+        {t('auth.haveAccount')}{' '}
+        <Link to={`/login?next=${encodeURIComponent(next)}`}>{t('auth.login')}</Link>
       </p>
     </AuthShell>
   );
@@ -222,7 +249,10 @@ export function MagicLinkPage() {
     if (started.current) return; // StrictMode double effect: the token is single-use
     started.current = true;
     const token = params.get('token') ?? '';
-    api<{ user: UserDto; redirect: string | null }>('/auth/magic-link/verify', { method: 'POST', body: { token } })
+    api<{ user: UserDto; redirect: string | null }>('/auth/magic-link/verify', {
+      method: 'POST',
+      body: { token },
+    })
       .then((r) => signedIn(r.user, r.redirect ?? '/'))
       .catch(() => setError(true));
   }, [params, signedIn]);

@@ -17,7 +17,8 @@ beforeAll(async () => {
   alice = await newUser(ctx, 'Alice');
   bob = await newUser(ctx, 'Bob');
   listId = (await alice.post('/api/lists', { name: 'Casa' })).json().id;
-  actionId = (await alice.post('/api/actions', actionInput(listId, { category: 'Piante' }))).json().id;
+  actionId = (await alice.post('/api/actions', actionInput(listId, { category: 'Piante' }))).json()
+    .id;
 });
 afterAll(async () => ctx.close());
 
@@ -49,7 +50,8 @@ describe('non-members', () => {
     expect((await bob.patch(`/api/actions/${actionId}`, { title: 'Hacked' })).statusCode).toBe(404);
     expect((await bob.post(`/api/actions/${actionId}/complete`, {})).statusCode).toBe(404);
     expect(
-      (await bob.post(`/api/actions/${actionId}/snooze`, { until: '2025-06-20T10:00:00Z' })).statusCode,
+      (await bob.post(`/api/actions/${actionId}/snooze`, { until: '2025-06-20T10:00:00Z' }))
+        .statusCode,
     ).toBe(404);
     expect((await bob.del(`/api/actions/${actionId}`)).statusCode).toBe(404);
     expect((await bob.post(`/api/lists/${listId}/invitations`, {})).statusCode).toBe(404);
@@ -84,12 +86,21 @@ describe('editors', () => {
   });
 
   it('can read and update the shared state', async () => {
-    expect((await bob.get(`/api/lists/${listId}`)).json()).toMatchObject({ role: 'editor', memberCount: 2 });
+    expect((await bob.get(`/api/lists/${listId}`)).json()).toMatchObject({
+      role: 'editor',
+      memberCount: 2,
+    });
     expect((await bob.get(`/api/actions?listId=${listId}`)).json()).toHaveLength(1);
     expect((await bob.post(`/api/actions/${actionId}/complete`, {})).statusCode).toBe(200);
-    const created = await bob.post('/api/actions', actionInput(listId, { title: 'Pile telecomando' }));
+    const created = await bob.post(
+      '/api/actions',
+      actionInput(listId, { title: 'Pile telecomando' }),
+    );
     expect(created.statusCode).toBe(201);
-    expect((await bob.patch(`/api/actions/${created.json().id}`, { assigneeId: alice.user!.id })).statusCode).toBe(200);
+    expect(
+      (await bob.patch(`/api/actions/${created.json().id}`, { assigneeId: alice.user!.id }))
+        .statusCode,
+    ).toBe(200);
   });
 
   it('cannot perform owner-only operations', async () => {
@@ -99,7 +110,8 @@ describe('editors', () => {
     expect((await bob.post(`/api/lists/${listId}/invitations`, {})).statusCode).toBe(403);
     expect((await bob.del(`/api/lists/${listId}/members/${alice.user!.id}`)).statusCode).toBe(403);
     expect(
-      (await bob.patch(`/api/lists/${listId}/members/${bob.user!.id}`, { role: 'owner' })).statusCode,
+      (await bob.patch(`/api/lists/${listId}/members/${bob.user!.id}`, { role: 'owner' }))
+        .statusCode,
     ).toBe(403);
   });
 
@@ -113,7 +125,9 @@ describe('membership lifecycle', () => {
   it('the last owner cannot leave or be demoted', async () => {
     const me = alice.user!.id;
     expect((await alice.del(`/api/lists/${listId}/members/${me}`)).statusCode).toBe(409);
-    expect((await alice.patch(`/api/lists/${listId}/members/${me}`, { role: 'editor' })).statusCode).toBe(409);
+    expect(
+      (await alice.patch(`/api/lists/${listId}/members/${me}`, { role: 'editor' })).statusCode,
+    ).toBe(409);
   });
 
   it('the owner removes a member, who immediately loses access and their assignments', async () => {
@@ -125,7 +139,9 @@ describe('membership lifecycle', () => {
     ).json();
     expect(assigned.assignee.displayName).toBe('Carol');
 
-    expect((await alice.del(`/api/lists/${listId}/members/${carol.user!.id}`)).statusCode).toBe(204);
+    expect((await alice.del(`/api/lists/${listId}/members/${carol.user!.id}`)).statusCode).toBe(
+      204,
+    );
     expect((await carol.get(`/api/lists/${listId}`)).statusCode).toBe(404);
     expect((await carol.get(`/api/actions/${assigned.id}`)).statusCode).toBe(404);
     expect((await alice.get(`/api/actions/${assigned.id}`)).json().assignee).toBeNull();

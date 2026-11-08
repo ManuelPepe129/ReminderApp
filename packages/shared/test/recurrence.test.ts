@@ -142,7 +142,10 @@ describe('fixed schedule grid', () => {
   });
 
   it('firstOccurrenceAfter works for hourly grids over long ranges', () => {
-    const r = rule({ anchor: new Date('2025-01-01T00:00:00Z'), interval: { value: 6, unit: 'hour' } });
+    const r = rule({
+      anchor: new Date('2025-01-01T00:00:00Z'),
+      interval: { value: 6, unit: 'hour' },
+    });
     const res = firstOccurrenceAfter(r, new Date('2025-07-15T13:00:00Z'));
     expect(res.toISOString()).toBe('2025-07-15T18:00:00.000Z');
   });
@@ -238,7 +241,12 @@ describe('projectOccurrences', () => {
       rule: rule({ anchor: local('2025-06-02T09:00'), interval: { value: 1, unit: 'week' } }),
       dueAt: local('2025-06-16T09:00'),
     };
-    const occ = projectOccurrences(state, local('2025-06-01T00:00'), local('2025-07-01T00:00'), now);
+    const occ = projectOccurrences(
+      state,
+      local('2025-06-01T00:00'),
+      local('2025-07-01T00:00'),
+      now,
+    );
     expect(occ.map((o) => [fmt(o.at), o.current])).toEqual([
       ['2025-06-16T09:00', true],
       ['2025-06-23T09:00', false],
@@ -251,9 +259,18 @@ describe('projectOccurrences', () => {
       rule: rule({ anchor: local('2025-06-02T09:00'), interval: { value: 1, unit: 'week' } }),
       dueAt: local('2025-06-02T09:00'),
     };
-    const occ = projectOccurrences(state, local('2025-06-01T00:00'), local('2025-06-24T00:00'), now);
+    const occ = projectOccurrences(
+      state,
+      local('2025-06-01T00:00'),
+      local('2025-06-24T00:00'),
+      now,
+    );
     // Missed Jun 9 is skipped: if completed now, the next would be Jun 16.
-    expect(occ.map((o) => fmt(o.at))).toEqual(['2025-06-02T09:00', '2025-06-16T09:00', '2025-06-23T09:00']);
+    expect(occ.map((o) => fmt(o.at))).toEqual([
+      '2025-06-02T09:00',
+      '2025-06-16T09:00',
+      '2025-06-23T09:00',
+    ]);
   });
 
   it('projects from_completion assuming completion at due time', () => {
@@ -265,8 +282,17 @@ describe('projectOccurrences', () => {
       }),
       dueAt: local('2025-06-12T08:00'),
     };
-    const occ = projectOccurrences(state, local('2025-06-20T00:00'), local('2025-07-15T00:00'), now);
-    expect(occ.map((o) => fmt(o.at))).toEqual(['2025-06-22T08:00', '2025-07-02T08:00', '2025-07-12T08:00']);
+    const occ = projectOccurrences(
+      state,
+      local('2025-06-20T00:00'),
+      local('2025-07-15T00:00'),
+      now,
+    );
+    expect(occ.map((o) => fmt(o.at))).toEqual([
+      '2025-06-22T08:00',
+      '2025-07-02T08:00',
+      '2025-07-12T08:00',
+    ]);
   });
 
   it('uses the snoozed date as current occurrence', () => {
@@ -275,7 +301,12 @@ describe('projectOccurrences', () => {
       dueAt: local('2025-06-16T09:00'),
       snoozedUntil: local('2025-06-18T18:00'),
     };
-    const occ = projectOccurrences(state, local('2025-06-14T00:00'), local('2025-06-28T00:00'), now);
+    const occ = projectOccurrences(
+      state,
+      local('2025-06-14T00:00'),
+      local('2025-06-28T00:00'),
+      now,
+    );
     expect(occ.map((o) => [fmt(o.at), o.current])).toEqual([
       ['2025-06-18T18:00', true],
       ['2025-06-23T09:00', false],

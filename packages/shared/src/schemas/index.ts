@@ -141,10 +141,7 @@ export const calendarQuerySchema = z
     assigneeId: z.union([uuidSchema, z.literal('none'), z.literal('me')]).optional(),
   })
   .refine((v) => v.to.getTime() > v.from.getTime(), 'invalid_range')
-  .refine(
-    (v) => v.to.getTime() - v.from.getTime() <= 62 * 24 * 3_600_000,
-    'range_too_large',
-  );
+  .refine((v) => v.to.getTime() - v.from.getTime() <= 62 * 24 * 3_600_000, 'range_too_large');
 
 // ---------- Sharing ----------
 export const inviteCreateSchema = z.object({

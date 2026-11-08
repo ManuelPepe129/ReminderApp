@@ -51,9 +51,17 @@ describe('auth', () => {
 
   it('logs in and out', async () => {
     const c = new Client(ctx.app);
-    expect((await c.post('/api/auth/login', { email: 'anna@example.com', password: 'wrong-pass' })).statusCode).toBe(401);
-    expect((await c.post('/api/auth/login', { email: 'nobody@example.com', password: 'x' })).statusCode).toBe(401);
-    const ok = await c.post('/api/auth/login', { email: 'ANNA@example.com', password: 'password123' });
+    expect(
+      (await c.post('/api/auth/login', { email: 'anna@example.com', password: 'wrong-pass' }))
+        .statusCode,
+    ).toBe(401);
+    expect(
+      (await c.post('/api/auth/login', { email: 'nobody@example.com', password: 'x' })).statusCode,
+    ).toBe(401);
+    const ok = await c.post('/api/auth/login', {
+      email: 'ANNA@example.com',
+      password: 'password123',
+    });
     expect(ok.statusCode).toBe(200);
     expect((await c.get('/api/auth/me')).statusCode).toBe(200);
     expect((await c.post('/api/auth/logout')).statusCode).toBe(204);
@@ -83,7 +91,14 @@ describe('auth', () => {
 
   it('signs in (and signs up) with a single-use magic link', async () => {
     const c = new Client(ctx.app);
-    expect((await c.post('/api/auth/magic-link', { email: 'bruno@example.com', redirect: '/calendario' })).statusCode).toBe(204);
+    expect(
+      (
+        await c.post('/api/auth/magic-link', {
+          email: 'bruno@example.com',
+          redirect: '/calendario',
+        })
+      ).statusCode,
+    ).toBe(204);
     const mail = ctx.mailer.last();
     expect(mail?.to).toBe('bruno@example.com');
     const token = /token=([\w-]+)/.exec(mail!.text)![1]!;
@@ -110,7 +125,9 @@ describe('auth', () => {
   });
 
   it('does not reveal whether an account exists', async () => {
-    const res = await new Client(ctx.app).post('/api/auth/magic-link', { email: 'unknown@example.com' });
+    const res = await new Client(ctx.app).post('/api/auth/magic-link', {
+      email: 'unknown@example.com',
+    });
     expect(res.statusCode).toBe(204);
   });
 
@@ -128,7 +145,10 @@ describe('auth rate limiting', () => {
       const c = new Client(limited.app);
       const codes: number[] = [];
       for (let i = 0; i < 5; i++) {
-        codes.push((await c.post('/api/auth/login', { email: 'x@example.com', password: 'nope' })).statusCode);
+        codes.push(
+          (await c.post('/api/auth/login', { email: 'x@example.com', password: 'nope' }))
+            .statusCode,
+        );
       }
       expect(codes).toEqual([401, 401, 401, 429, 429]);
     } finally {

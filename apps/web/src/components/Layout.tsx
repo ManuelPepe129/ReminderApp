@@ -60,7 +60,12 @@ export function Layout() {
       <main id="main" className="main" tabIndex={-1}>
         <Outlet />
       </main>
-      <button type="button" className="btn btn-primary fab" onClick={() => openEditor()} disabled={!online}>
+      <button
+        type="button"
+        className="btn btn-primary fab"
+        onClick={() => openEditor()}
+        disabled={!online}
+      >
         <PlusIcon />
         {t('nav.newAction')}
       </button>

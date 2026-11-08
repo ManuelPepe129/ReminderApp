@@ -25,7 +25,8 @@ export function createQueryClient() {
         staleTime: 15_000,
         refetchOnWindowFocus: true,
         // Do not retry client errors (401/403/404…); retry network failures a couple of times.
-        retry: (count, err) => !(err instanceof ApiError && err.status >= 400 && err.status < 500) && count < 2,
+        retry: (count, err) =>
+          !(err instanceof ApiError && err.status >= 400 && err.status < 500) && count < 2,
       },
     },
   });

@@ -40,10 +40,14 @@ export function SettingsPage() {
   }, [user.timezone]);
 
   const save = (patch: Partial<PreferencesDto>) => {
-    update.mutate(patch, { onSuccess: () => toast.show(t('settings.saved')), onError: toast.error });
+    update.mutate(patch, {
+      onSuccess: () => toast.show(t('settings.saved')),
+      onError: toast.error,
+    });
   };
 
-  if (!draft) return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
+  if (!draft)
+    return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
   const f = (n: string) => `${id}-${n}`;
 
   return (
@@ -63,11 +67,22 @@ export function SettingsPage() {
         </p>
         <div className="field">
           <label htmlFor={f('name')}>{t('auth.displayName')}</label>
-          <input id={f('name')} value={draft.displayName} maxLength={80} required onChange={(e) => setDraft({ ...draft, displayName: e.target.value })} />
+          <input
+            id={f('name')}
+            value={draft.displayName}
+            maxLength={80}
+            required
+            onChange={(e) => setDraft({ ...draft, displayName: e.target.value })}
+          />
         </div>
         <div className="field">
           <label htmlFor={f('tz')}>{t('settings.timezone')}</label>
-          <select id={f('tz')} value={draft.timezone} onChange={(e) => setDraft({ ...draft, timezone: e.target.value })} aria-describedby={f('tz-hint')}>
+          <select
+            id={f('tz')}
+            value={draft.timezone}
+            onChange={(e) => setDraft({ ...draft, timezone: e.target.value })}
+            aria-describedby={f('tz-hint')}
+          >
             {zones.map((z) => (
               <option key={z} value={z}>
                 {z}
@@ -77,7 +92,11 @@ export function SettingsPage() {
           <span className="hint" id={f('tz-hint')}>
             {t('settings.timezoneHint', { tz: browserTimeZone() })}{' '}
             {draft.timezone !== browserTimeZone() && (
-              <button type="button" className="btn btn-ghost small" onClick={() => setDraft({ ...draft, timezone: browserTimeZone() })}>
+              <button
+                type="button"
+                className="btn btn-ghost small"
+                onClick={() => setDraft({ ...draft, timezone: browserTimeZone() })}
+              >
                 {t('settings.useBrowserTz')}
               </button>
             )}
@@ -134,11 +153,25 @@ export function SettingsPage() {
         <h2 id={f('notif')}>{t('settings.notifications')}</h2>
         <PushDevice />
         <label className="choice">
-          <input type="checkbox" checked={draft.pushEnabled} onChange={(e) => { setDraft({ ...draft, pushEnabled: e.target.checked }); save({ pushEnabled: e.target.checked }); }} />
+          <input
+            type="checkbox"
+            checked={draft.pushEnabled}
+            onChange={(e) => {
+              setDraft({ ...draft, pushEnabled: e.target.checked });
+              save({ pushEnabled: e.target.checked });
+            }}
+          />
           <span>{t('settings.channelPush')}</span>
         </label>
         <label className="choice">
-          <input type="checkbox" checked={draft.emailEnabled} onChange={(e) => { setDraft({ ...draft, emailEnabled: e.target.checked }); save({ emailEnabled: e.target.checked }); }} />
+          <input
+            type="checkbox"
+            checked={draft.emailEnabled}
+            onChange={(e) => {
+              setDraft({ ...draft, emailEnabled: e.target.checked });
+              save({ emailEnabled: e.target.checked });
+            }}
+          />
           <span>{t('settings.channelEmail')}</span>
         </label>
         <form
@@ -159,13 +192,23 @@ export function SettingsPage() {
                 <label htmlFor={f('qs')} className="small">
                   {t('settings.quietFrom')}
                 </label>
-                <input id={f('qs')} type="time" value={draft.quietStart ?? ''} onChange={(e) => setDraft({ ...draft, quietStart: e.target.value || null })} />
+                <input
+                  id={f('qs')}
+                  type="time"
+                  value={draft.quietStart ?? ''}
+                  onChange={(e) => setDraft({ ...draft, quietStart: e.target.value || null })}
+                />
               </div>
               <div className="field">
                 <label htmlFor={f('qe')} className="small">
                   {t('settings.quietTo')}
                 </label>
-                <input id={f('qe')} type="time" value={draft.quietEnd ?? ''} onChange={(e) => setDraft({ ...draft, quietEnd: e.target.value || null })} />
+                <input
+                  id={f('qe')}
+                  type="time"
+                  value={draft.quietEnd ?? ''}
+                  onChange={(e) => setDraft({ ...draft, quietEnd: e.target.value || null })}
+                />
               </div>
             </div>
             <span className="hint">{t('settings.quietHoursHint')}</span>
@@ -175,7 +218,12 @@ export function SettingsPage() {
             <select
               id={f('lead')}
               value={draft.defaultLeadMinutes ?? ''}
-              onChange={(e) => setDraft({ ...draft, defaultLeadMinutes: e.target.value === '' ? null : Number(e.target.value) })}
+              onChange={(e) =>
+                setDraft({
+                  ...draft,
+                  defaultLeadMinutes: e.target.value === '' ? null : Number(e.target.value),
+                })
+              }
             >
               <option value="">{t('form.leadNone')}</option>
               {LEADS.map((l) => (
@@ -231,7 +279,9 @@ function PushDevice() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    getPushState().then(setState).catch(() => setState('unsupported'));
+    getPushState()
+      .then(setState)
+      .catch(() => setState('unsupported'));
   }, []);
 
   if (state === null) return null;
@@ -250,12 +300,19 @@ function PushDevice() {
     <div className="field">
       <span className="label">{t('settings.push')}</span>
       {state === 'unsupported' && <p className="muted small">{t('settings.pushUnsupported')}</p>}
-      {state === 'not-configured' && <p className="muted small">{t('settings.pushNotConfigured')}</p>}
+      {state === 'not-configured' && (
+        <p className="muted small">{t('settings.pushNotConfigured')}</p>
+      )}
       {state === 'denied' && <p className="muted small">{t('settings.pushDenied')}</p>}
       {state === 'enabled' && <p className="small">{t('settings.pushActive')}</p>}
       <div className="row">
         {state === 'disabled' && (
-          <button type="button" className="btn btn-primary" disabled={busy} onClick={() => void run(enablePush)}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={busy}
+            onClick={() => void run(enablePush)}
+          >
             {t('settings.pushEnable')}
           </button>
         )}
@@ -273,7 +330,12 @@ function PushDevice() {
             >
               {t('settings.pushTest')}
             </button>
-            <button type="button" className="btn" disabled={busy} onClick={() => void run(disablePush)}>
+            <button
+              type="button"
+              className="btn"
+              disabled={busy}
+              onClick={() => void run(disablePush)}
+            >
               {t('settings.pushDisable')}
             </button>
           </>

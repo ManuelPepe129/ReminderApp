@@ -46,7 +46,8 @@ export function ActionDetailPage() {
   const list = lists.data?.find((l) => l.id === a?.listId);
   const upcoming = useMemo(() => (a ? nextOccurrences(a, now) : []), [a, now]);
 
-  if (action.isPending) return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
+  if (action.isPending)
+    return <div className="spinner" role="progressbar" aria-label={t('common.loading')} />;
   if (!a)
     return (
       <div className="card empty">
@@ -71,18 +72,31 @@ export function ActionDetailPage() {
         </button>
       </div>
 
-      <section className={`card action-card ${overdue ? 'is-overdue' : ''}`} style={list ? ({ '--list-color': list.color } as React.CSSProperties) : undefined}>
+      <section
+        className={`card action-card ${overdue ? 'is-overdue' : ''}`}
+        style={list ? ({ '--list-color': list.color } as React.CSSProperties) : undefined}
+      >
         <div className="stack" style={{ gap: 8 }}>
           <h1 style={{ margin: 0 }}>{a.title}</h1>
           <div className="meta">
             {overdue ? (
-              <span className="badge badge-overdue">{t('home.overdueBy', { duration: durationText(t, due, now) })}</span>
+              <span className="badge badge-overdue">
+                {t('home.overdueBy', { duration: durationText(t, due, now) })}
+              </span>
             ) : (
               <span>{t('action.due', { when: formatWhen(due, tz, now) })}</span>
             )}
-            {a.status === 'paused' && <span className="badge badge-paused">{t('action.paused')}</span>}
-            {a.status === 'archived' && <span className="badge badge-paused">{t('action.archived')}</span>}
-            {a.snoozedUntil && <span className="badge badge-snoozed">{t('action.snoozedUntil', { when: formatWhen(a.snoozedUntil, tz, now) })}</span>}
+            {a.status === 'paused' && (
+              <span className="badge badge-paused">{t('action.paused')}</span>
+            )}
+            {a.status === 'archived' && (
+              <span className="badge badge-paused">{t('action.archived')}</span>
+            )}
+            {a.snoozedUntil && (
+              <span className="badge badge-snoozed">
+                {t('action.snoozedUntil', { when: formatWhen(a.snoozedUntil, tz, now) })}
+              </span>
+            )}
           </div>
           <div className="meta">
             <span>
@@ -104,7 +118,11 @@ export function ActionDetailPage() {
         </div>
         {a.status === 'active' && (
           <div className="actions">
-            <button type="button" className="btn btn-success" onClick={() => quick.complete(a.id, a.title, a.effectiveDueAt)}>
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={() => quick.complete(a.id, a.title, a.effectiveDueAt)}
+            >
               <CheckIcon />
               {t('action.done')}
             </button>
@@ -175,12 +193,19 @@ export function ActionDetailPage() {
               <li key={e.id}>
                 <div className="stack" style={{ gap: 2 }}>
                   <strong>
-                    {t(`history.${e.type}`, { name, when: e.newDueAt ? formatWhen(e.newDueAt, tz, now) : '' })}
+                    {t(`history.${e.type}`, {
+                      name,
+                      when: e.newDueAt ? formatWhen(e.newDueAt, tz, now) : '',
+                    })}
                   </strong>
                   <span className="small muted">
                     {formatWhen(e.occurredAt, tz, now)}
-                    {e.type === 'completed' && e.dueAt && ` · ${t('history.dueWas', { when: formatWhen(e.dueAt, tz, now) })}`}
-                    {e.type === 'completed' && e.newDueAt && ` · ${t('history.next', { when: formatWhen(e.newDueAt, tz, now) })}`}
+                    {e.type === 'completed' &&
+                      e.dueAt &&
+                      ` · ${t('history.dueWas', { when: formatWhen(e.dueAt, tz, now) })}`}
+                    {e.type === 'completed' &&
+                      e.newDueAt &&
+                      ` · ${t('history.next', { when: formatWhen(e.newDueAt, tz, now) })}`}
                   </span>
                   {e.note && <span className="small">{e.note}</span>}
                 </div>

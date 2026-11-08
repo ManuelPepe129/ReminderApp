@@ -41,7 +41,13 @@ export function HomePage() {
   }, [actions.data, now, tz]);
 
   const card = (a: ActionDto) => (
-    <ActionCard key={a.id} action={a} list={listById.get(a.listId)} now={now} showList={multipleLists} />
+    <ActionCard
+      key={a.id}
+      action={a}
+      list={listById.get(a.listId)}
+      now={now}
+      showList={multipleLists}
+    />
   );
 
   return (
@@ -49,7 +55,9 @@ export function HomePage() {
       <h1 className="visually-hidden">{t('home.title')}</h1>
       <Filters />
 
-      {actions.isPending && <div className="spinner" role="progressbar" aria-label={t('common.loading')} />}
+      {actions.isPending && (
+        <div className="spinner" role="progressbar" aria-label={t('common.loading')} />
+      )}
       {actions.isError && (
         <div className="alert error" role="alert">
           {t('errors.network')}{' '}
@@ -62,7 +70,11 @@ export function HomePage() {
       {actions.data && actions.data.length === 0 && (
         <div className="card empty">
           <p>{t('home.noActions')}</p>
-          <button type="button" className="btn btn-primary" onClick={() => openEditor({ listId: filters.listId })}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => openEditor({ listId: filters.listId })}
+          >
             <PlusIcon />
             {t('nav.newAction')}
           </button>
@@ -109,7 +121,11 @@ export function HomePage() {
           {paused.length > 0 && (
             <section className="section" aria-labelledby="paused-title">
               <details>
-                <summary className="group-title" id="paused-title" style={{ cursor: 'pointer', minHeight: 44 }}>
+                <summary
+                  className="group-title"
+                  id="paused-title"
+                  style={{ cursor: 'pointer', minHeight: 44 }}
+                >
                   {t('home.paused')} <span className="count">({paused.length})</span>
                 </summary>
                 <ul className="cards">{paused.map(card)}</ul>
